@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { getWorkOrders } from "../../lib/core";
-import DataTable from "react-data-table-component";
+import CustomTable from "@/components/CustomTable";
+import CustomButon from "@/components/CustomButon";
+import OrderModal from "./OrderModal";
 
 export default function PaginatedTable() {
   const [workOrders, setWorkOrders] = useState([]);
   const [statusCount, setStatusCount] = useState({});
   const [pending, setPending] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchWorkOrders = async () => {
@@ -21,9 +24,9 @@ export default function PaginatedTable() {
           return acc;
         }, {});
 
-        console.log(count)
+        console.log(count);
 
-        setStatusCount(count)
+        setStatusCount(count);
       } catch (error) {
         console.error("Error fetching work orders:", error);
       } finally {
@@ -62,7 +65,7 @@ export default function PaginatedTable() {
           default:
             color = "lightgray";
         }
-  
+
         return (
           <span
             style={{
@@ -71,6 +74,8 @@ export default function PaginatedTable() {
               backgroundColor: color,
               color: "white",
               fontWeight: "bold",
+              width: "100%",
+              textAlign: "center",
             }}
           >
             {row.status_display} {/* Mostrar nombre legible del estado */}
@@ -83,23 +88,17 @@ export default function PaginatedTable() {
 
   return (
     <div className="p-5 h-screen bg-gray-100">
+      <OrderModal         isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Modal 3"></OrderModal>{" "}
       <div className="bg-white p-5 rounded-lg shadow-lg">
         <h2 className="text-xl font-bold mb-4">Órdenes</h2>
 
-        <button className="bg-blue-500 text-white font-semibold py-1 px-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
-  Crear
-</button>
-        <DataTable
-          columns={columns}
-          data={workOrders}
-          progressPending={pending}
-          pagination
-          paginationRowsPerPageOptions={[10, 25, 50, 100, 500]}
-          highlightOnHover
-          striped
-          dense
-          noDataComponent="No hay órdenes disponibles"
-        />
+        <CustomButon
+          text={"Crear"}
+          onClick={() => setModalOpen(true)}
+        ></CustomButon>
+        <CustomTable data={workOrders} columns={columns}></CustomTable>
       </div>
     </div>
   );
